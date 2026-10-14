@@ -1,0 +1,19 @@
+# Caddyfile para Terratech Industrial OS
+# Compresión Zstd / Gzip, SSL automático y proxy inverso para faena minera
+
+:80 {
+    encode zstd gzip
+
+    # Redirección de API hacia el backend Go
+    handle /api/* {
+        reverse_proxy api:8080 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+        }
+    }
+
+    # Redirección de aplicación PWA Next.js
+    handle /* {
+        reverse_proxy frontend:3000
+    }
+}
